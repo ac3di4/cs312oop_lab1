@@ -12,7 +12,11 @@ namespace curves {
         /// bigger circle radius
         double r;
     public:
-        explicit Deltoid(double r) : r(r) {}
+        explicit Deltoid(double radius = 0) {
+            if (radius < 0)
+                throw std::range_error("Negative radius error");
+            r = radius;
+        }
 
         /// get r
         [[nodiscard]] double get() const {
