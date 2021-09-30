@@ -2,7 +2,7 @@
 enable_testing()
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIR})
-add_executable(task2_tests tests.cpp Deltoid.hpp)
+add_executable(task2_tests DeltoidTests.cpp Deltoid.hpp)
 
 # Link test executable against gtest & gtest_main
 target_link_libraries(task2_tests gtest gtest_main)
