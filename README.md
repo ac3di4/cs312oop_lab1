@@ -4,10 +4,8 @@ First lab of the cs312oop [hyper](https://hyper.mephi.ru) course \
 
 ## Структурное программирование
 [Условие](TASK1.md) \
-[Код](task1/main.cpp) \
-Название `target` в [cmake lists](CMakeLists.txt) - task1
+[Код](task1)
 
 ## Простой класс
 [Условие](TASK2.md) \
-[Код](task2/main.cpp) \
-Название `target` в [cmake lists](CMakeLists.txt) - task2
+[Код](task2)

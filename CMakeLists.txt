@@ -5,4 +5,4 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 
 add_subdirectory(task1)
-add_executable(task2 task2/main.cpp)
+add_subdirectory(task2)
