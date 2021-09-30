@@ -12,10 +12,8 @@ namespace curves {
         /// bigger circle radius
         double r;
     public:
-        explicit Deltoid(double radius = 0) {
-            if (radius < 0)
-                throw std::range_error("Negative radius error");
-            r = radius;
+        explicit Deltoid(double radius = 0) : r(0) {
+            set(radius);
         }
 
         /// get r
@@ -25,6 +23,8 @@ namespace curves {
 
         /// set r
         void set(double radius) {
+            if (radius < 0)
+                throw std::range_error("Negative radius error");
             r = radius;
         }
 
