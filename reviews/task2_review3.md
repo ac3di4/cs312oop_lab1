@@ -5,7 +5,7 @@
 ## ConsoleApp.cpp
 `ConsoleApp.cpp:3` - непонятный файл `tchar.h`, у меня он его не нашел даже в `<>`
 
-`ConsoleApp.cpp:6` - вешка Microsoft Visual C++ онли. Даже просто на виде её [не видит](https://coderoad.ru/12685202/%D0%9A%D0%B0%D0%BA-%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C-%D1%84%D0%B0%D0%B9%D0%BB-crtdbg-h), поэтому не желательно.
+`ConsoleApp.cpp:6` - фишка Microsoft Visual C++ онли. Даже просто на винде её [не видит](https://coderoad.ru/12685202/%D0%9A%D0%B0%D0%BA-%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C-%D1%84%D0%B0%D0%B9%D0%BB-crtdbg-h), поэтому не желательно.
 
 `ConsoleApp.cpp:14` - в динамическом выделении памяти нет смысла
 
