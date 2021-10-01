@@ -8,4 +8,4 @@ add_executable(task2_tests DeltoidTests.cpp Deltoid.hpp)
 target_link_libraries(task2_tests gtest gtest_main)
 add_test(task2_tests task2_tests)
 
-add_executable(task2 main.cpp Menu.cpp Menu.hpp DeltoidMenu.cpp DeltoidMenu.hpp)
+add_executable(task2 main.cpp Menu.hpp DeltoidMenu.hpp)

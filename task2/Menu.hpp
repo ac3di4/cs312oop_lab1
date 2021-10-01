@@ -5,13 +5,16 @@
 #include <iostream>
 
 namespace ui {
+    /// Command for evaluation
+    /// Call Menu::prompt for reading additional parameters
     template <class T>
     class BaseCommand {
     public:
-        /// read additional parameters from input
         virtual std::string eval(T &managed) = 0;
     };
 
+    /// Command Evaluator. Needed for extensibility
+    /// Inherit, make constructor and override spawn
     template <class T>
     class BaseMenuOption {
     protected:
@@ -32,9 +35,12 @@ namespace ui {
         }
     };
 
-    /// generic menu class for different menu commands options and uses
-    /// easily extended, written for menu for one object.
+    /// Universal menu class;
+    /// easily extended, written for menu for one object, reading from stdin&stdout
     /// potentially options can be changed in runtime
+    ///
+    /// For creating commands inherit from BaseMenuOption,
+    /// BaseCommand and use fabric pattern
     template <class T>
     class Menu {
     private:
@@ -44,6 +50,7 @@ namespace ui {
     public:
         explicit Menu(std::vector<BaseMenuOption<T> *> &items) : items(items) {}
 
+        /// promp input from cin using cout
         template<class K>
         static K prompt(const char *mes) {
             K value;
@@ -59,19 +66,28 @@ namespace ui {
         }
 
         void run() {
-            size_t cmd = 0;
-            while (true) {
-                for (size_t i = 0; i < items.size(); ++i)
-                    std::cout << i + 1 << ") " << items[i]->get_label() << std::endl;
-                std::cout << "0) Exit" << std::endl << std::endl;
+            print_options();
+            size_t cmd;
+            // it stops if it's zero
+            while ((cmd = read_option()))
+                eval_cmd(cmd);
+        }
 
-                while ((cmd = Menu<T>::template prompt<size_t>("option")) > items.size()) {}
+        void print_options() const {
+            for (size_t i = 0; i < items.size(); ++i)
+                std::cout << i + 1 << ") " << items[i]->get_label() << std::endl;
+            std::cout << "0) Exit" << std::endl << std::endl;
+        }
 
-                if (cmd == 0)
-                    break;
-                else
-                    std::cout << items[cmd - 1]->eval(managed) << std::endl << std::endl;
-            };
+        [[nodiscard]] size_t read_option() const {
+            size_t cmd;
+            while ((cmd = Menu<T>::template prompt<size_t>("option")) > items.size())
+                std::cout << "No such option." << std::endl;
+            return cmd;
+        }
+
+        void eval_cmd(size_t cmd) {
+            std::cout << items[cmd - 1]->eval(managed) << std::endl << std::endl;
         }
     };
 }
