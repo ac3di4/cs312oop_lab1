@@ -3,94 +3,83 @@
 
 #include <vector>
 #include <iostream>
+#include <functional>
 
 namespace ui {
-    /// Command for evaluation
-    /// Call Menu::prompt for reading additional parameters
-    template <class T>
-    class BaseCommand {
-    public:
-        virtual std::string eval(T &managed) = 0;
-    };
-
-    /// Command Evaluator. Needed for extensibility
-    /// Inherit, make constructor and override spawn
-    template <class T>
-    class BaseMenuOption {
-    protected:
-        std::string label;
-    public:
-        explicit BaseMenuOption(const char *label) : label(std::string(label)) {}
-        explicit BaseMenuOption(std::string &label) : label(label) {}
-
-        [[nodiscard]] std::string get_label() const { return label; }
-
-        virtual BaseCommand<T> *spawn() const = 0;
-
-        std::string eval(T &managed) const {
-            BaseCommand<T> *cmd = spawn();
-            std::string result = cmd->eval(managed);
-            delete cmd;
-            return result;
-        }
-    };
-
-    /// Universal menu class;
-    /// easily extended, written for menu for one object, reading from stdin&stdout
-    /// potentially options can be changed in runtime
-    ///
-    /// For creating commands inherit from BaseMenuOption,
-    /// BaseCommand and use fabric pattern
-    template <class T>
+    template<class T>
     class Menu {
+    public:
+        /// Predefine Command.
+        /// First arg - menu
+        /// Second - object to change
+        /// return string to print (command result)
+        typedef std::string Command(Menu<T> &, T &);
+        typedef std::pair<std::string, std::function<Command>> MenuOption;
+
     private:
-        std::vector<BaseMenuOption<T> *> items;
+        /// std::string - label
+        std::vector<MenuOption> items;
         /// Managed object
         T managed;
+        /// Input and output of the menu
+        std::istream &in;
+        std::ostream &out;
     public:
-        explicit Menu(std::vector<BaseMenuOption<T> *> &items) : items(items) {}
-
-        /// promp input from cin using cout
-        template<class K>
-        static K prompt(const char *mes) {
-            K value;
-            do {
-                std::cout << "[" << mes << "]: ";
-                std::cin >> value;
-                if (std::cin.bad())
-                    throw std::runtime_error("Read error");
-                if (std::cin.eof())
-                    throw std::runtime_error("Found EOF while reading");
-            } while (std::cin.fail());
-            return value;
-        }
+        explicit Menu(std::vector<MenuOption> options,
+                      std::istream &input = std::cin, std::ostream &output = std::cout) : items(std::move(options)),
+                                                                                          in(input), out(output) {}
 
         void run() {
             print_options();
             size_t cmd;
-            // it stops if it's zero
-            while ((cmd = read_option()))
-                eval_cmd(cmd);
+            try {
+                while ((cmd = read_option())) {
+                    eval_cmd(cmd);
+                    print_options();
+                }
+            } catch (const std::runtime_error &e) {
+                // read option or eval_cmd error
+                throw e;
+            }
         }
 
         void print_options() const {
             for (size_t i = 0; i < items.size(); ++i)
-                std::cout << i + 1 << ") " << items[i]->get_label() << std::endl;
-            std::cout << "0) Exit" << std::endl << std::endl;
+                out << i + 1 << ") " << items[i].first << std::endl;
+            out << "0) Exit" << std::endl << std::endl;
         }
 
         [[nodiscard]] size_t read_option() const {
             size_t cmd;
-            while ((cmd = Menu<T>::template prompt<size_t>("option")) > items.size())
-                std::cout << "No such option." << std::endl;
+            while ((cmd = prompt<size_t>("option")) > items.size())
+                print("No such option");
             return cmd;
         }
 
         void eval_cmd(size_t cmd) {
-            std::cout << items[cmd - 1]->eval(managed) << std::endl << std::endl;
+            out << items[cmd - 1].second(*this, managed) << std::endl << std::endl;
+        }
+
+        /// One style read
+        template<class K>
+        K prompt(const char *mes) const {
+            K value;
+            do {
+                out << "[" << mes << "]: ";
+                in >> value;
+                if (in.bad())
+                    throw std::runtime_error("Menu read error");
+                if (in.eof())
+                    throw std::runtime_error("Found EOF while reading");
+            } while (in.fail());
+            return value;
+        }
+
+        /// One style print
+        void print(const char *mes) const {
+            out << ":" << mes << ":" << std::endl;
         }
     };
 }
-
 
 #endif //CS312OOP_LAB1_MENU_HPP

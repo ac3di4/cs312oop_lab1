@@ -1,7 +1,7 @@
 #include "DeltoidMenu.hpp"
 
 int main() {
-    ui::Menu<Deltoid> menu(deltoid_ui::menu_options);
+    ui::Menu<curves::Deltoid> menu(deltoid_ui::menu_options());
     menu.run();
     return 0;
 }
